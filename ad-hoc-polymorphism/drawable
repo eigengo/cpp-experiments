@@ -1,0 +1,91 @@
+/*
+ * C++ Experiments: Ad-hoc polymorphism Copyright (C) 2016 Eigengo
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+#ifndef DEMO_LIBRARY_H
+#define DEMO_LIBRARY_H
+
+#include <iostream>
+#include <vector>
+#include <cassert>
+
+template <typename T>
+void draw(const T& x, std::ostream& out, size_t position) {
+    out << std::string(position, ' ') << x << std::endl;
+}
+
+/**
+ * An object that can be drawn; with private implementation and ctros
+ * from arbitrary types T.
+ */
+class object_t {
+public:
+    template <typename T>
+    object_t(T x) : self(std::make_shared<object_t::model<T>>(std::move(x))) {
+    }
+
+    /**
+     * Draw function
+     *
+     * @param x
+     * @param out
+     * @param position
+     */
+    friend void draw(const object_t& x, std::ostream& out, size_t position) {
+        x.self->draw(out, position);
+    }
+private:
+    struct concept_t {
+        virtual ~concept_t() = default;
+        virtual void draw(std::ostream&, size_t) const = 0;
+    };
+
+    template <typename T>
+    struct model : concept_t {
+        model(T x) : data(std::move(x)) { }
+        void draw(std::ostream &out, size_t position) const {
+            ::draw(data, out, position);
+        };
+        T data;
+    };
+
+    std::shared_ptr<const concept_t> self;
+};
+
+/**
+ * The main concept here is that document is simply a vector of
+ * ``object_t``s: we don't want to invent our own types
+ */
+using document_t = std::vector<object_t>;
+
+/**
+ * Implementation of draw for document_t; all documents can be drawn.
+ * This would be a great place for concepts; aka typeclasses:
+ *
+ * class Drawable a where ...
+ * instance (Functor f, Drawable a) => Drawable (f a) where ...
+ *
+ * @param x the document / container / functor to be drawn
+ * @param out the output stream
+ * @param position the padding position
+ */
+template <>
+void draw(const document_t& x, std::ostream &out, size_t position) {
+    out << std::string(position, ' ') << "<document>" << std::endl;
+    for (const auto &e : x) draw(e, out, position + 2);
+    out << std::string(position, ' ') << "</document>" << std::endl;
+}
+
+#endif //DEMO_LIBRARY_H
