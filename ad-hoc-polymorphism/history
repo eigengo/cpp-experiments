@@ -18,10 +18,28 @@
 #define DEMO_HISTORY_H
 #include "drawable"
 
+/**
+ * History is a vector of documents
+ */
 using history_t = std::vector<document_t>;
 
+/**
+ * Commit the current state into the given history
+ * @param x the history
+ */
 void commit(history_t &x) { assert(x.size()); x.push_back(x.back()); }
+
+/**
+ * Undo the last step in the history
+ * @param x the history
+ */
 void undo(history_t &x) { assert(x.size()); x.pop_back(); }
+
+/**
+ * Return the current document from non-empty history
+ * @param x the history
+ * @return the current document
+ */
 document_t& current(history_t &x) { assert(x.size()); return x.back(); }
 
 #endif //DEMO_HISTORY_H
