@@ -17,12 +17,18 @@
 #include "drawable"
 #include "history"
 
-// As a demo, it is possible to add an element of arbitrary type...
+/**
+ * As a demo, it is possible to add an element of arbitrary type...
+ */
 class entry_t {
 
 };
 
-// ... as long as there is an implementation of ``draw`` for that type
+/**
+ * As long as there is a template specialisation of the ``draw(T&, std::ostream&, size_t)``
+ * for that type. Remember that these values are wrapped in ``object_t`` instances when used
+ * in ``document_t``.
+ */
 template <>
 void draw(const entry_t&, std::ostream& out, size_t position) {
     out << std::string(position, ' ') << "entry_t" << std::endl;

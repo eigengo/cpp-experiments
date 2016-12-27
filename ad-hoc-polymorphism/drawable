@@ -21,6 +21,15 @@
 #include <vector>
 #include <cassert>
 
+/**
+ * Templated ``draw`` function, where the ``T``s implement the ``std::ostream``
+ * ``<<`` operators.
+ *
+ * @tparam T the type
+ * @param x the value to be drawn
+ * @param out the output stream
+ * @param position the left padding "position"
+ */
 template <typename T>
 void draw(const T& x, std::ostream& out, size_t position) {
     out << std::string(position, ' ') << x << std::endl;
@@ -28,20 +37,36 @@ void draw(const T& x, std::ostream& out, size_t position) {
 
 /**
  * An object that can be drawn; with private implementation and ctros
- * from arbitrary types T.
+ * from arbitrary types T. The main idea is that all types can be wrapped
+ * as ``object_t``s. It provides a friend function draw, which calls the
+ * ``draw(std::ostream&, size_t)`` function in the private ``model``.
+ *
+ * This container also reduces the number of allocations and copies (using
+ * the move semantics particularly) and by making the most of the
+ * ``std::shared_ptr<const x>`` (in place of ``std::unique_ptr<x>``
+ * with move ctors).
  */
 class object_t {
 public:
+    /**
+     * Ctor that wraps the the value ``x`` inside ``model`` shared pointer.
+     * Notice the ``std::move(x)`` here and ``model(T x) : data(std::move(x))``
+     * later on.
+     *
+     * @tparam T the type
+     * @param x the value
+     */
     template <typename T>
     object_t(T x) : self(std::make_shared<object_t::model<T>>(std::move(x))) {
     }
 
     /**
-     * Draw function
+     * The draw function that matches the ``::draw`` function by delegating to
+     * ``concept_t::draw(std::ostream&, size_t)``
      *
-     * @param x
-     * @param out
-     * @param position
+     * @param x the ``object_t`` value to be printed
+     * @param out the output stream
+     * @param position the left padding "position"
      */
     friend void draw(const object_t& x, std::ostream& out, size_t position) {
         x.self->draw(out, position);
