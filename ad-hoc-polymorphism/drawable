@@ -31,7 +31,7 @@
  * @param position the left padding "position"
  */
 template <typename T>
-void draw(const T& x, std::ostream& out, size_t position) {
+void draw(const T &x, std::ostream &out, size_t position) {
     out << std::string(position, ' ') << x << std::endl;
 }
 
@@ -68,7 +68,7 @@ public:
      * @param out the output stream
      * @param position the left padding "position"
      */
-    friend void draw(const object_t& x, std::ostream& out, size_t position) {
+    friend void draw(const object_t &x, std::ostream &out, size_t position) {
         x.self->draw(out, position);
     }
 private:
@@ -107,7 +107,7 @@ using document_t = std::vector<object_t>;
  * @param position the padding position
  */
 template <>
-void draw(const document_t& x, std::ostream &out, size_t position) {
+void draw(const document_t &x, std::ostream &out, size_t position) {
     out << std::string(position, ' ') << "<document>" << std::endl;
     for (const auto &e : x) draw(e, out, position + 2);
     out << std::string(position, ' ') << "</document>" << std::endl;

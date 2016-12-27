@@ -30,7 +30,7 @@ class entry_t {
  * in ``document_t``.
  */
 template <>
-void draw(const entry_t&, std::ostream& out, size_t position) {
+void draw(const entry_t&, std::ostream &out, size_t position) {
     out << std::string(position, ' ') << "entry_t" << std::endl;
 }
 
