@@ -1,4 +1,4 @@
-#include <climits>/*
+/*
  * C++ Experiments: Ad-hoc polymorphism Copyright (C) 2016 Eigengo
  *
  * This program is free software: you can redistribute it and/or modify
